@@ -3,6 +3,7 @@ package xconfig
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"reflect"
@@ -13,15 +14,17 @@ import (
 )
 
 type loader struct {
-	Debug  bool
-	Env    bool
-	Secret bool
-	Path   string
+	Env          bool
+	Secret       bool
+	Path         string
+	AwsSsm       bool
+	AwsSsmPath   string
+	AwsSsmParams map[string]string
 }
 
 // load config to struct pointer
 // prefixes are parents names path, for recursive calling
-func (l loader) load(dst interface{}, prefixes ...string) error {
+func (l *loader) load(dst interface{}, prefixes ...string) error {
 	configValue := reflect.Indirect(reflect.ValueOf(dst))
 	if configValue.Kind() != reflect.Struct {
 		return errors.New("invalid dst, it should be a struct pointer")
@@ -44,7 +47,17 @@ func (l loader) load(dst interface{}, prefixes ...string) error {
 			value = defaultValue
 			source = "default"
 		}
-
+		// check aws ssm
+		if l.AwsSsm && l.AwsSsmParams != nil {
+			ssmName := fieldStruct.Tag.Get("ssm")
+			if ssmName == "" {
+				ssmName = strings.ToUpper(strings.Join(append(prefixes, strcase.ToSnake(fieldStruct.Name)), "_"))
+			}
+			if v, ok := l.AwsSsmParams[ssmName]; ok {
+				value = v
+				source = "aws_ssm"
+			}
+		}
 		// check shell env
 		if l.Env && reflect.Indirect(field).Kind() != reflect.Struct {
 			envName := fieldStruct.Tag.Get("env")
@@ -72,9 +85,7 @@ func (l loader) load(dst interface{}, prefixes ...string) error {
 		// load value to field
 		isBlank := reflect.DeepEqual(field.Interface(), reflect.Zero(field.Type()).Interface())
 		if isBlank && value != "" {
-			if l.Debug {
-				fmt.Printf("Loading configuration field `%s` from %s\n", fieldStruct.Name, source)
-			}
+			slog.Debug("Loading configuration", "field", fieldStruct.Name, "source", source)
 			switch reflect.Indirect(field).Kind() {
 			case reflect.Bool:
 				switch strings.ToLower(value) {
@@ -137,18 +148,20 @@ func (l loader) load(dst interface{}, prefixes ...string) error {
 					}
 				}
 			}
+		default:
+			// do nothing here, just for linter check
 		}
 	}
 
 	return nil
 }
 
-func (l loader) getSecret(name string) string {
+func (l *loader) getSecret(name string) string {
 	data, err := os.ReadFile(path.Join(l.Path, name))
 	if os.IsNotExist(err) {
 		return ""
-	} else if err != nil && l.Debug {
-		fmt.Printf("read secret file error: %s\n", err)
+	} else if err != nil {
+		slog.Error("read secret file error", "error", err)
 		return ""
 	}
 	return strings.TrimSpace(string(data))

@@ -20,7 +20,6 @@ type testConfig struct {
 func TestLoadingConfig(t *testing.T) {
 	var err error
 	var l = loader{
-		Debug:  true,
 		Env:    true,
 		Secret: true,
 		Path:   "mock",

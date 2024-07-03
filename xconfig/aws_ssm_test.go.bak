@@ -1,0 +1,41 @@
+package xconfig
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func Test_loader_loadAwsSsmParamStore(t *testing.T) {
+	type fields struct {
+		AwsSsmPath string
+		Name       string
+		Value      string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "normal",
+			fields: fields{
+				AwsSsmPath: "/testing/ci",
+				Name:       "FOO",
+				Value:      "bar",
+			},
+			wantErr: assert.NoError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			l := &loader{
+				AwsSsm:     true,
+				AwsSsmPath: tt.fields.AwsSsmPath,
+			}
+			tt.wantErr(t, l.loadAwsSsmParamStore(), fmt.Sprintf("loadAwsSsmParamStore()"))
+			assert.Equal(t, tt.fields.Value, l.AwsSsmParams[tt.fields.Name])
+		})
+	}
+}
