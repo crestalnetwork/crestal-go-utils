@@ -24,7 +24,7 @@ func (l *loader) loadAwsSsmParamStore() error {
 	ctx := context.Background()
 	if awsConfig == nil {
 		// try to get default aws config
-		cfg, err := config.LoadDefaultConfig(ctx, config.WithSharedConfigProfile("default"))
+		cfg, err := config.LoadDefaultConfig(ctx)
 		if err != nil {
 			return fmt.Errorf("load default aws config failed: %w", err)
 		}
