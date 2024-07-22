@@ -53,7 +53,7 @@ func (l *loader) load(dst interface{}, prefixes ...string) error {
 			if ssmName == "" {
 				ssmName = strings.ToUpper(strings.Join(append(prefixes, strcase.ToSnake(fieldStruct.Name)), "_"))
 			}
-			if v, ok := l.AwsSsmParams[ssmName]; ok {
+			if v, ok := l.AwsSsmParams[ssmName]; ok && v != "" {
 				value = v
 				source = "aws_ssm"
 			}
