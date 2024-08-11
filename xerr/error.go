@@ -1,8 +1,10 @@
 package xerr
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 )
 
 // ServerError always the same
@@ -50,6 +52,14 @@ func (e *Error) StatusCode() int {
 // Unwrap support the Unwrap interface
 func (e *Error) Unwrap() error {
 	return e.err
+}
+
+// WriteToResponse the error to the response using this helper when you're not using a framework.
+// If you're using a framework, handle the error in the ErrorHandler, for example, as seen in xfiber/error.go.
+func (e *Error) WriteToResponse(w http.ResponseWriter) {
+	w.WriteHeader(e.code)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(e)
 }
 
 // Is err the instance of Error,and has <key>?
