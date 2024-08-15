@@ -1,6 +1,7 @@
 package xfiber
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strings"
@@ -25,6 +26,8 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		final = xerr.New(fe.Code, strings.ReplaceAll(http.StatusText(fe.Code), " ", ""), fe.Message)
 	} else if errors.As(err, &ve) {
 		final = xerr.New(fiber.StatusBadRequest, "BadRequest", ve.Error())
+	} else if errors.Is(err, context.Canceled) {
+		final = xerr.New(fiber.StatusBadRequest, "ClientCancelled", err.Error())
 	} else {
 		// other errors
 		final = xerr.New(fiber.StatusInternalServerError, "ServerError", err.Error())
