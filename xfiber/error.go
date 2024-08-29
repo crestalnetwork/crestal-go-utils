@@ -3,12 +3,12 @@ package xfiber
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net/http"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/crestalnetwork/crestal-go-utils/xerr"
 )
@@ -36,7 +36,7 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 	// log the internal server error
 	if final.StatusCode() >= fiber.StatusInternalServerError {
 		// log the error
-		log.Errorw("internal server error", "error", final)
+		slog.Error("internal server error", "error", final, "component", "fiber")
 	}
 
 	return ctx.Status(final.StatusCode()).JSON(final)
