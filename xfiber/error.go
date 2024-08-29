@@ -25,12 +25,12 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 	} else if errors.As(err, &fe) {
 		final = xerr.New(fe.Code, strings.ReplaceAll(http.StatusText(fe.Code), " ", ""), fe.Message)
 	} else if errors.As(err, &ve) {
-		final = xerr.New(fiber.StatusBadRequest, "BadRequest", ve.Error())
+		final = xerr.Wrap(fiber.StatusBadRequest, "BadRequest", ve)
 	} else if errors.Is(err, context.Canceled) {
-		final = xerr.New(fiber.StatusBadRequest, "ClientCancelled", err.Error())
+		final = xerr.Wrap(fiber.StatusBadRequest, "ClientCancelled", err)
 	} else {
 		// other errors
-		final = xerr.New(fiber.StatusInternalServerError, "ServerError", err.Error())
+		final = xerr.Wrap(fiber.StatusInternalServerError, "ServerError", err)
 	}
 
 	// log the internal server error

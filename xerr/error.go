@@ -39,6 +39,15 @@ func Newf(code int, key string, format string, a ...interface{}) *Error {
 	}
 }
 
+func Wrap(code int, key string, err error) *Error {
+	return &Error{
+		err:     err,
+		code:    code,
+		Key:     key,
+		Message: err.Error(),
+	}
+}
+
 // Error makes it compatible with `error` interface.
 func (e *Error) Error() string {
 	return e.Message
