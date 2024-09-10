@@ -15,6 +15,7 @@ const (
 	EnvTestnetProd = "testnet-prod"
 )
 
+// Basic is the shared basic configuration for all projects
 type Basic struct {
 	Env     string `default:"local"`
 	Debug   bool   `default:"false"`
@@ -24,19 +25,20 @@ type Basic struct {
 	SlackChannel string `default:"C076H0HBZLZ"` // default is channel testnet-dev
 }
 
+// GenLogger generates a logger based on the environment and configuration
 func (b Basic) GenLogger() *slog.Logger {
+	var log *slog.Logger
 	level := slog.LevelInfo
 	if b.Debug {
 		level = slog.LevelDebug
 	}
 	if b.Env == EnvLocal {
-		return slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		log = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 			AddSource: true,
 			Level:     level,
 		}))
-	}
-	if b.SlackToken != "" {
-		return slog.New(
+	} else if b.SlackToken != "" {
+		log = slog.New(
 			slogmulti.Fanout(
 				slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: level}),
 				slogslack.Option{
@@ -45,6 +47,9 @@ func (b Basic) GenLogger() *slog.Logger {
 					Channel:  b.SlackChannel,
 				}.NewSlackHandler(),
 			))
+	} else {
+		log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: level}))
 	}
-	return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: level}))
+
+	return log.With("release", b.Release, "env", b.Env)
 }
