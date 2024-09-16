@@ -39,7 +39,7 @@ func New(config Config) (*gorm.DB, error) {
 		return nil, oops.Errorf("db name is required")
 	}
 
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=UTC", config.Host, config.Port, config.Username, config.Password, config.Name)
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", config.Host, config.Port, config.Username, config.Password, config.Name)
 	var db *gorm.DB
 	var err error
 	err = retry.Do(func() error {
