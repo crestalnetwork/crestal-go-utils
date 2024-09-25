@@ -168,7 +168,7 @@ func (l *loader) getSecret(name string) string {
 }
 
 func fieldNamePath(prefixes []string, fieldStruct *reflect.StructField) []string {
-	if fieldStruct.Anonymous && fieldStruct.Tag.Get("anonymous") == "true" {
+	if fieldStruct.Anonymous {
 		return prefixes
 	}
 	return append(prefixes, strcase.ToSnake(fieldStruct.Name))
