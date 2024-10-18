@@ -20,6 +20,7 @@ type Config struct {
 	Username          string
 	Password          string
 	Name              string
+	TranslateError    bool `default:"true"`
 }
 
 func New(config Config) (*gorm.DB, error) {
@@ -43,7 +44,9 @@ func New(config Config) (*gorm.DB, error) {
 	var db *gorm.DB
 	var err error
 	err = retry.Do(func() error {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+			TranslateError: config.TranslateError,
+		})
 		if err != nil {
 			return oops.With("host", config.Host, "port", config.Port, "user", config.Username, "db-name", config.Name).
 				Wrapf(err, "connect to db failed")
