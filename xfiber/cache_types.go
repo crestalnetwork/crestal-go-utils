@@ -26,7 +26,7 @@ type cachedResponse struct {
 	At     time.Time
 }
 
-func (v *cachedResponse) MarshalBinary() ([]byte, error) {
+func (v cachedResponse) MarshalBinary() ([]byte, error) {
 	return msgpack.Marshal(v)
 }
 
