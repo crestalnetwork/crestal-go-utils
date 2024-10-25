@@ -1,11 +1,11 @@
 package xfiber
 
 import (
+	"encoding/json"
 	"net/http"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 var ignoreHeaders = map[string]any{
@@ -27,11 +27,11 @@ type cachedResponse struct {
 }
 
 func (v cachedResponse) MarshalBinary() ([]byte, error) {
-	return msgpack.Marshal(v)
+	return json.Marshal(v)
 }
 
 func (v *cachedResponse) UnmarshalBinary(data []byte) error {
-	return msgpack.Unmarshal(data, v)
+	return json.Unmarshal(data, v)
 }
 
 // Write cached resp to echo
