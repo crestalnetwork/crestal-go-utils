@@ -61,6 +61,7 @@ func NewCache(opts CacheOptions) *Cache {
 		time.Sleep(1 * time.Second)
 		panic(msg)
 	}
+	c.kv = opts.Redis
 	return c
 }
 
