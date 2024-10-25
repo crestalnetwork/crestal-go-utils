@@ -91,10 +91,13 @@ func (cc *Cache) cacheResp(key string, exp time.Duration, resp *fiber.Response) 
 	cc.log.Debug("cached", "key", key)
 }
 
-// Entity can cache entity by id
-func (cc *Cache) Entity(kf KeyFunction, ef ExpFunction) fiber.Handler {
+// Custom can cache entity by id
+func (cc *Cache) Custom(kf KeyFunction, ef ExpFunction) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if cc.disabled {
+			return c.Next()
+		}
+		if c.Method() != fiber.MethodGet {
 			return c.Next()
 		}
 		// run before real handler
@@ -133,4 +136,15 @@ func (cc *Cache) Entity(kf KeyFunction, ef ExpFunction) fiber.Handler {
 		cc.cacheResp(key, exp, c.Response())
 		return nil
 	}
+}
+
+// Normal can cache endpoint in exp, can not clear manually in this mode.
+// Use this in GET handler, and success resp code must be 200 StatusOK
+func (cc *Cache) Normal(exp time.Duration) fiber.Handler {
+	return cc.Custom(
+		func(c *fiber.Ctx) (string, error) {
+			return fmt.Sprintf("cache:%s?%s", c.Request().URI().Path(), c.Request().URI().QueryString()), nil
+		},
+		cc.Exp(exp),
+	)
 }
