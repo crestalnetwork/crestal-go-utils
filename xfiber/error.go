@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/samber/oops"
 
 	"github.com/crestalnetwork/crestal-go-utils/xerr"
 )
@@ -36,7 +37,7 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 	// log the internal server error
 	if final.StatusCode() >= fiber.StatusInternalServerError {
 		// log the error
-		slog.Error("internal server error", "error", final, "component", "fiber")
+		slog.Error("internal server error", "error", oops.Wrap(final), "component", "fiber")
 	}
 
 	return ctx.Status(final.StatusCode()).JSON(final)
