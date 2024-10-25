@@ -114,7 +114,7 @@ func (cc *Cache) Custom(kf KeyFunction, ef ExpFunction) fiber.Handler {
 		err = cc.kv.Get(c.Context(), key).Scan(cResp)
 		if errors.Is(err, redis.Nil) {
 			// missed, continue
-			cc.log.Debug("cache missed", "key", key)
+			cc.log.Info("cache missed", "key", key)
 		} else if err != nil {
 			return err
 		} else {
@@ -124,7 +124,7 @@ func (cc *Cache) Custom(kf KeyFunction, ef ExpFunction) fiber.Handler {
 			expAt := cResp.At.Add(exp)
 			c.Set(fiber.HeaderCacheControl, fmt.Sprintf("public, max-age=%d", int(expAt.Sub(time.Now()).Seconds())))
 			// skip real handler and other middlewares
-			cc.log.Debug("cache hit", "key", key)
+			cc.log.Info("cache hit", "key", key)
 			return nil
 		}
 
@@ -145,6 +145,17 @@ func (cc *Cache) Normal(exp time.Duration) fiber.Handler {
 	return cc.Custom(
 		func(c *fiber.Ctx) (string, error) {
 			return fmt.Sprintf("cache:%s?%s", c.Request().URI().Path(), c.Request().URI().QueryString()), nil
+		},
+		cc.Exp(exp),
+	)
+}
+
+// NormalWithDomain can cache endpoint in exp, can not clear manually in this mode.
+// Use this in GET handler, and success resp code must be 200 StatusOK
+func (cc *Cache) NormalWithDomain(exp time.Duration) fiber.Handler {
+	return cc.Custom(
+		func(c *fiber.Ctx) (string, error) {
+			return fmt.Sprintf("cache:%s:%s?%s", c.Hostname(), c.Request().URI().Path(), c.Request().URI().QueryString()), nil
 		},
 		cc.Exp(exp),
 	)
