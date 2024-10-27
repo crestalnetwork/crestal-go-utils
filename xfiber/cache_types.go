@@ -8,6 +8,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// XCacheRefresh is a header key to force refresh cache, the value is the cache key
+const XCacheRefresh = "X-Cache-Refresh"
+
+// XCacheHostname is used when XCacheRefresh is set, the value is the hostname
+const XCacheHostname = "X-Cache-Hostname"
+
 var ignoreHeaders = map[string]any{
 	"Connection":          nil,
 	"Keep-Alive":          nil,
