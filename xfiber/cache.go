@@ -125,6 +125,7 @@ func (cc *Cache) Custom(kf KeyFunction, ef ExpFunction) fiber.Handler {
 			// cache the resp
 			cc.cacheResp(forceKey, c.Response())
 			cc.refreshing.Delete(forceKey)
+			cc.log.Debug("force cache done", "key", forceKey)
 			return nil
 		}
 		// start normal process
@@ -154,13 +155,13 @@ func (cc *Cache) Custom(kf KeyFunction, ef ExpFunction) fiber.Handler {
 				if expAt.Before(time.Now()) && cc.asyncRefresh {
 					// refresh in the background
 					if _, ok := cc.refreshing.Load(key); !ok {
+						local := new(fasthttp.URI)
+						c.Request().URI().CopyTo(local)
+						local.SetHost("localhost")
+						agent := fiber.Get(local.String())
+						agent.Set(XCacheRefresh, key)
+						agent.Set(XCacheHostname, c.Hostname())
 						go func() {
-							local := new(fasthttp.URI)
-							c.Request().URI().CopyTo(local)
-							local.SetHost("localhost")
-							agent := fiber.Get(local.String())
-							agent.Set(XCacheRefresh, key)
-							agent.Set(XCacheHostname, c.Hostname())
 							_, _, errs := agent.Bytes()
 							if len(errs) > 0 {
 								cc.log.Error("async refresh failed", "key", key, "error", errs[0])
@@ -177,9 +178,9 @@ func (cc *Cache) Custom(kf KeyFunction, ef ExpFunction) fiber.Handler {
 				if leftSec < 0 {
 					leftSec = 0
 				}
-				c.Set(fiber.HeaderCacheControl, fmt.Sprintf("public, max-age=%d", int(expAt.Sub(time.Now()).Seconds())))
+				c.Set(fiber.HeaderCacheControl, fmt.Sprintf("public, max-age=%d", leftSec))
 				// skip real handler and other middlewares
-				cc.log.Info("cache hit", "key", key, "left", leftSec, "async", cc.asyncRefresh)
+				cc.log.Info("cache hit", "key", key, "left", leftSec)
 				return nil
 			}
 		}
