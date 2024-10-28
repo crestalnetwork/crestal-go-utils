@@ -22,6 +22,7 @@ type Cache struct {
 	disabled     bool
 	asyncRefresh bool
 	refreshing   sync.Map // if asyncRefresh, will store the refreshing key for mutex
+	skipper      func(c *fiber.Ctx) bool
 }
 
 type CacheOptions struct {
@@ -33,6 +34,8 @@ type CacheOptions struct {
 	AsyncRefresh bool
 	// Disabled with a bool expression
 	Disabled bool
+	// Skipper will skip the cache middleware
+	Skipper func(c *fiber.Ctx) bool
 }
 
 // KeyFunction compute a redis key from echo context
@@ -55,6 +58,7 @@ func NewCache(opts CacheOptions) *Cache {
 	var c = &Cache{
 		asyncRefresh: opts.AsyncRefresh,
 		disabled:     opts.Disabled,
+		skipper:      opts.Skipper,
 	}
 	if opts.Logger != nil {
 		c.log = opts.Logger
@@ -103,6 +107,9 @@ func (cc *Cache) cacheResp(key string, resp *fiber.Response) {
 func (cc *Cache) Custom(kf KeyFunction, ef ExpFunction) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if cc.disabled {
+			return c.Next()
+		}
+		if cc.skipper != nil && cc.skipper(c) {
 			return c.Next()
 		}
 		// only cache GET method
