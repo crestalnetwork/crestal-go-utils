@@ -15,6 +15,7 @@ const AwsSsmParamStorePath = "AWS_SSM_PARAM_STORE_PATH"
 
 var awsConfig *aws.Config
 
+// AwsSsmParamStore is used in config struct, it will load AWS_SSM_PARAM_STORE_PATH from ENV
 type AwsSsmParamStore struct {
 	Path string
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/crestalnetwork/crestal-go-utils/xerr"
 )
 
+// ErrorHandler is a fiber error handler
 func ErrorHandler(ctx *fiber.Ctx, err error) error {
 	var final *xerr.Error
 

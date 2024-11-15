@@ -39,6 +39,7 @@ func Newf(code int, key string, format string, a ...interface{}) *Error {
 	}
 }
 
+// Wrap an error, implement the official errors interface
 func Wrap(code int, key string, err error) *Error {
 	return &Error{
 		err:     err,
@@ -95,6 +96,7 @@ func IsCode(err error, code int) bool {
 	return false
 }
 
+// As check if the error is an instance of Error
 func As(err error) (*Error, bool) {
 	e := new(Error)
 	if errors.As(err, &e) {

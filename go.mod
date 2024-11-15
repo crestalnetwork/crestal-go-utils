@@ -15,6 +15,7 @@ require (
 	github.com/samber/slog-multi v1.2.3
 	github.com/samber/slog-slack/v2 v2.7.0
 	github.com/stretchr/testify v1.9.0
+	github.com/valyala/fasthttp v1.55.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.12
@@ -62,7 +63,6 @@ require (
 	github.com/samber/slog-common v0.17.1 // indirect
 	github.com/slack-go/slack v0.14.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.55.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
 	golang.org/x/net v0.28.0 // indirect

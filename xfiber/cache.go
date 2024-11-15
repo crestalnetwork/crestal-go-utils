@@ -25,6 +25,7 @@ type Cache struct {
 	skipper      func(c *fiber.Ctx) bool
 }
 
+// CacheOptions is the options for cache middleware
 type CacheOptions struct {
 	// Redis client is required
 	Redis redis.UniversalClient
@@ -181,7 +182,7 @@ func (cc *Cache) Custom(kf KeyFunction, ef ExpFunction) fiber.Handler {
 				// hit, return cached resp
 				cResp.Write(c)
 				// extra cache headers
-				leftSec := int(expAt.Sub(time.Now()).Seconds())
+				leftSec := int(time.Until(expAt).Seconds())
 				if leftSec < 0 {
 					leftSec = 0
 				}

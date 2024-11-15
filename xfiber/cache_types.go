@@ -32,10 +32,12 @@ type cachedResponse struct {
 	At     time.Time
 }
 
+// MarshalBinary implements encoding.BinaryMarshaler
 func (v cachedResponse) MarshalBinary() ([]byte, error) {
 	return json.Marshal(v)
 }
 
+// UnmarshalBinary implements encoding.BinaryUnmarshaler
 func (v *cachedResponse) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, v)
 }

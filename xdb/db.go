@@ -23,6 +23,7 @@ type Config struct {
 	TranslateError    bool `default:"true"`
 }
 
+// New creates a new postgres database connection
 func New(config Config) (*gorm.DB, error) {
 	if config.Host == "" {
 		return nil, oops.Errorf("host is required")
