@@ -11,6 +11,9 @@ import (
 var ServerError = New(500, "ServerError",
 	"There was an issue on the server side. Please report to us or try again later.")
 
+// NotFound always the same
+var NotFound = New(404, "NotFound", "The requested resource was not found.")
+
 // Error custom struct
 type Error struct {
 	err     error // support the Unwrap interface
