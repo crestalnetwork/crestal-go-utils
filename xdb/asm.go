@@ -34,7 +34,7 @@ func loadFromAwsSecretsManager(cfg *Config) error {
 	}
 	client := secretsmanager.NewFromConfig(*awsConfig)
 	res, err := client.GetSecretValue(ctx, &secretsmanager.GetSecretValueInput{
-		SecretId: aws.String(cfg.SecretManagerPath),
+		SecretId: aws.String(cfg.SecretsManagerPath),
 	})
 	if err != nil {
 		return oops.Wrapf(err, "get secret value from aws failed")
