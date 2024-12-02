@@ -14,6 +14,9 @@ so if you set the global default logger anywhere, it will be used by this packag
   slog.SetDefault(YOUR_LOGGER)
 ```
 
+## xlog
+A wrapper around the standard slog package that offers a New function for easily creating a logger.
+
 ## xconfig
 Load configuration from environment variables, docker/k8s secrets, aws systems manager or secret manager.
 
