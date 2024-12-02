@@ -25,6 +25,12 @@ type Config struct {
 
 // New creates a new postgres database connection
 func New(config Config) (*gorm.DB, error) {
+	if config.SecretManagerPath != "" {
+		err := loadFromAwsSecretsManager(&config)
+		if err != nil {
+			return nil, err
+		}
+	}
 	if config.Host == "" {
 		return nil, oops.Errorf("host is required")
 	}
