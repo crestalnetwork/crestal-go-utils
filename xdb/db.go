@@ -11,8 +11,9 @@ import (
 )
 
 // Config is the configuration for the postgres database
-// If SecretsManagerPath is set, it will try to load the config from aws ssm parameter store, ignore other fields.
-// But the Name field will override the DB Name field in SecretManager value, if both are set.
+// If SecretsManagerPath is set (and Host not set),
+// it will try to load the config from aws ssm parameter store, ignore other fields.
+// But the Name field will override the DB Name field in SecretsManager value, if both are set.
 type Config struct {
 	SecretsManagerPath string
 	Host               string
@@ -25,8 +26,8 @@ type Config struct {
 
 // New creates a new postgres database connection
 func New(config Config) (*gorm.DB, error) {
-	if config.SecretsManagerPath != "" {
-		err := loadFromAwsSecretsManager(&config)
+	if config.SecretsManagerPath != "" && config.Host == "" {
+		err := LoadConfigFromAwsSecretsManager(&config)
 		if err != nil {
 			return nil, err
 		}
@@ -47,7 +48,7 @@ func New(config Config) (*gorm.DB, error) {
 		return nil, oops.Errorf("db name is required")
 	}
 
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", config.Host, config.Port, config.Username, config.Password, config.Name)
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s connect_timeout=5", config.Host, config.Port, config.Username, config.Password, config.Name)
 	var db *gorm.DB
 	var err error
 	err = retry.Do(func() error {

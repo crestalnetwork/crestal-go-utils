@@ -21,7 +21,10 @@ type asmRes struct {
 	DBName   string `json:"dbname"`
 }
 
-func loadFromAwsSecretsManager(cfg *Config) error {
+// LoadConfigFromAwsSecretsManager load config from aws secrets manager
+// If you have multiple databases, you can manually call this function to load the config
+// Otherwise, you can use the New function to load the config automatically(that will not change the config outside)
+func LoadConfigFromAwsSecretsManager(cfg *Config) error {
 	ctx := context.Background()
 	// aws client
 	if awsConfig == nil {
