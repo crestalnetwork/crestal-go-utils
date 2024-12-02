@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/avast/retry-go/v4"
+	sloggorm "github.com/orandin/slog-gorm"
 	"github.com/samber/oops"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -22,6 +23,7 @@ type Config struct {
 	Password           string
 	Name               string
 	TranslateError     bool `default:"true"`
+	UseSlog            bool `default:"true"`
 }
 
 // New creates a new postgres database connection
@@ -48,13 +50,20 @@ func New(config Config) (*gorm.DB, error) {
 		return nil, oops.Errorf("db name is required")
 	}
 
+	gormConfig := &gorm.Config{
+		TranslateError: config.TranslateError,
+	}
+	if config.UseSlog {
+		gormConfig.Logger = sloggorm.New(
+			sloggorm.SetLogLevel(sloggorm.ErrorLogType, slog.LevelInfo),
+			sloggorm.SetLogLevel(sloggorm.DefaultLogType, slog.LevelDebug),
+		)
+	}
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s connect_timeout=5", config.Host, config.Port, config.Username, config.Password, config.Name)
 	var db *gorm.DB
 	var err error
 	err = retry.Do(func() error {
-		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-			TranslateError: config.TranslateError,
-		})
+		db, err = gorm.Open(postgres.Open(dsn), gormConfig)
 		if err != nil {
 			return oops.With("host", config.Host, "port", config.Port, "user", config.Username, "db-name", config.Name).
 				Wrapf(err, "connect to db failed")
