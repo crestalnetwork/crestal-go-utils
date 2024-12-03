@@ -1,3 +1,4 @@
+// Package xconfig can load config from shell env variables, aws ssm and docker/k8s secrets.
 package xconfig
 
 import (

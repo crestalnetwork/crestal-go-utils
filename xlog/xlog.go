@@ -1,3 +1,4 @@
+// Package xlog is a simple wrapper for slog, it will create a slog.Logger with options
 package xlog
 
 import (
@@ -24,6 +25,7 @@ type Options struct {
 	ServiceName string
 }
 
+// New will create a new slog.Logger with options
 func New(opts Options) *slog.Logger {
 	var log *slog.Logger
 	// init global variable log

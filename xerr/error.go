@@ -1,3 +1,4 @@
+// Package xerr is custom error type of Crestal Network.
 package xerr
 
 import (

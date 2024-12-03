@@ -1,3 +1,4 @@
+// Package xdb is a simple wrapper for gorm client creation, it will create a gorm.DB with options
 package xdb
 
 import (

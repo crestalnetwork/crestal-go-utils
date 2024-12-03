@@ -1,3 +1,4 @@
+// Package xfiber contains utilities for fiber framework
 package xfiber
 
 import (

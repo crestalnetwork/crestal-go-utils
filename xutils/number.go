@@ -1,3 +1,4 @@
+// Package xutils is a utility package, it contains some utility functions.
 package xutils
 
 import (
