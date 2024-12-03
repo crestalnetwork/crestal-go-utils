@@ -5,7 +5,7 @@ In these utilities, we prioritize the [12-factor](https://12factor.net/) princip
 
 [![go report card](https://goreportcard.com/badge/github.com/crestalnetwork/crestal-go-utils "go report card")](https://goreportcard.com/report/github.com/crestalnetwork/crestal-go-utils)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
-[![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/crestalnetwork/crestal-go-utils?tab=doc)
+[![Go.Dev reference](https://img.shields.io/badge/go.dev-reference-blue?logo=go&logoColor=white)](https://pkg.go.dev/github.com/crestalnetwork/crestal-go-utils?tab=doc)
 
 ## Logger
 this package use standard slog package for logging, 
