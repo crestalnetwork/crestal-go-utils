@@ -27,7 +27,7 @@ func MidParseEnvStage(ctx *fiber.Ctx) error {
 	}
 	// otherwise, it's a production environment.
 	ctx.Context().SetUserValue("stage", stage)
-	return nil
+	return ctx.Next()
 }
 
 // EnvStage returns the environment stage by reading the value from the context
