@@ -19,7 +19,7 @@ func MidParseEnvStage(ctx *fiber.Ctx) error {
 	if !strings.Contains(hostname, ".") {
 		// If the hostname does not contain a dot, it's a local development.
 		stage = 1
-	} else if strings.HasSuffix(hostname, ".crestal.dev") {
+	} else if strings.HasSuffix(hostname, ".crestal.dev") || strings.HasSuffix(hostname, ".vercel.app") {
 		// If the hostname ends with .crestal.dev, it's a staging environment.
 		stage = 1
 	} else if hostname == "127.0.0.1" {
