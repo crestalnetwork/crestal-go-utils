@@ -11,6 +11,7 @@ require (
 	github.com/go-playground/validator/v10 v10.23.0
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/iancoleman/strcase v0.3.0
+	github.com/jomei/notionapi v1.13.2
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/samber/oops v1.14.2
