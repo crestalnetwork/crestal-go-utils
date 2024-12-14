@@ -76,7 +76,12 @@ func (c *Client) ParsePropertyStringArrayByComma(ps notionapi.Properties, key st
 	if !ok {
 		return nil, false
 	}
-	return strings.Split(row, ","), true
+	resp := strings.Split(row, ",")
+	// trim all values
+	for i, v := range resp {
+		resp[i] = strings.TrimSpace(v)
+	}
+	return resp, true
 }
 
 func (c *Client) ParsePropertyStringArrayByNewline(ps notionapi.Properties, key string) ([]string, bool) {
@@ -109,6 +114,10 @@ func (c *Client) ParsePropertyStringArrayByNewline(ps notionapi.Properties, key 
 			return nil, false
 		}
 		resp = strings.Split(v, "\n")
+	}
+	// trim all values
+	for i, v := range resp {
+		resp[i] = strings.TrimSpace(v)
 	}
 	return resp, true
 }
