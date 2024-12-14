@@ -86,27 +86,6 @@ func (c *Client) ParsePropertyStringArrayByNewline(ps notionapi.Properties, key 
 		return nil, false
 	}
 	switch p.GetType() {
-	case notionapi.PropertyTypeTitle:
-		s := p.(*notionapi.TitleProperty).Title
-		for _, v := range s {
-			if strings.TrimSpace(v.PlainText) != "" {
-				resp = append(resp, strings.Split(v.PlainText, "\n")...)
-			}
-		}
-	case notionapi.PropertyTypeRichText:
-		s := p.(*notionapi.RichTextProperty).RichText
-		for _, v := range s {
-			if strings.TrimSpace(v.PlainText) != "" {
-				resp = append(resp, strings.Split(v.PlainText, "\n")...)
-			}
-		}
-	case notionapi.PropertyTypeText:
-		s := p.(*notionapi.TextProperty).Text
-		for _, v := range s {
-			if strings.TrimSpace(v.PlainText) != "" {
-				resp = append(resp, strings.Split(v.PlainText, "\n")...)
-			}
-		}
 	case notionapi.PropertyTypeRelation:
 		r := p.(*notionapi.RelationProperty).Relation
 		if len(r) == 0 {
@@ -125,7 +104,11 @@ func (c *Client) ParsePropertyStringArrayByNewline(ps notionapi.Properties, key 
 			resp = append(resp, v)
 		}
 	default:
-		return nil, false
+		v, ok := c.ParsePropertyString(ps, key)
+		if !ok {
+			return nil, false
+		}
+		resp = strings.Split(v, "\n")
 	}
 	return resp, true
 }
