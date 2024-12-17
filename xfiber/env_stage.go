@@ -19,7 +19,7 @@ func MidParseEnvStage(ctx *fiber.Ctx) error {
 	if !strings.Contains(hostname, ".") {
 		// If the hostname does not contain a dot, it's a local development.
 		stage = 1
-	} else if strings.Count(hostname, ".") == 1 {
+	} else if hostname == "metrics-backend-api.production" {
 		// If the hostname contains only one dot, it's in kubernetes internal environment.
 		stage = 1
 	} else if strings.HasSuffix(hostname, ".crestal.dev") || strings.HasSuffix(hostname, ".vercel.app") {
